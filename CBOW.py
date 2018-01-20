@@ -44,15 +44,6 @@ def remove_words(text, words, words_index):
         if count % 1000==0: print "%d lines are processed"%(count)
     return otext
 
-def rmsprop(w, dw, m, b=None, db=None, extra=None, b1=.99, neta=.001, e=1e-8):
-    # m = self.opt_var.getm(extra)
-    m = b1*m + (1 - b1)*np.square(dw)
-    w -= neta * np.divide(dw, (np.sqrt(m) + e))
-    # self.opt_var.setm(m ,extra)
-    # if b is not None:
-    #     b -= self.neta * db
-    return w, m
-
 def CBOW(text, words_index, wcount, twcount, context=3, epoch = 10, d=50, neg=5):
     wweight = np.random.normal(0, .5, (wcount, d))
     neta = sneta = 0.001
@@ -84,16 +75,9 @@ def CBOW(text, words_index, wcount, twcount, context=3, epoch = 10, d=50, neg=5)
                 ## Rmsprop
                 for i in range(neg + 1): wweight[w[i], :], m[w[i], :] = rmsprop(w=wweight[w[i], :], dw=((ywh[i] - twh[i]) * h), m=m[w[i], :], neta=neta)
                 ##################################################################
-                # if count%100==0:
-                #     wc = 0
-                #     while wc < wcount:
-                #         if any(dw[wc,:]):
-                #             wweight[wc,:], m[wc,:] = rmsprop(w=wweight[wc,:], dw=dw[wc,:], m=m[wc,:], neta=neta)
-                #             dw[wc, :] = np.zeros(dw[wc,:].shape)
-                #         wc+=1
+                
                 if count % 10000 == 0:
                     print "%d error is : %f , %f"%(count, err/100000, neta)
-                    # neta = sneta * (1 - count / (float)(epoch * tcword + 1))
                     neta = sneta * 0.0001 if neta < sneta * 0.0001 else sneta * (1 - count / float((epoch * twcount + 1)))
                     err = 0
         print "%d/%d epoch complete"%(ep,epoch)
@@ -102,10 +86,10 @@ def CBOW(text, words_index, wcount, twcount, context=3, epoch = 10, d=50, neg=5)
 
 
 if __name__ == '__main__':
-
+    text_file = 'texted.txt'
     text = ''
     count = 0
-    for i in open('/media/zero/41FF48D81730BD9B/all-the-news/texted.txt'):
+    for i in open(text_file):
         text+=line_processing(i)+'\n'
         count += 1
         if count % 10000 == 0: break
