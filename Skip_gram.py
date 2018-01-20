@@ -44,15 +44,6 @@ def remove_words(text, words, words_index):
         if count % 1000==0: print "%d lines are processed"%(count)
     return otext
 
-def rmsprop(w, dw, m, b=None, db=None, extra=None, b1=.99, neta=.001, e=1e-8):
-    # m = self.opt_var.getm(extra)
-    m = b1*m + (1 - b1)*np.square(dw)
-    w -= neta * np.divide(dw, (np.sqrt(m) + e))
-    # self.opt_var.setm(m ,extra)
-    # if b is not None:
-    #     b -= self.neta * db
-    return w, m
-
 def Skip_gram(text, words_index, wcount, twcount, context=3, epoch = 10, d=50, neg=5, neta=.05):
     wweight = np.random.normal(0, .5, (wcount, d))
     sneta = neta
@@ -95,10 +86,10 @@ def Skip_gram(text, words_index, wcount, twcount, context=3, epoch = 10, d=50, n
 
 
 if __name__ == '__main__':
-
+    text_file = 'texted.txt'
     text = ''
     count = 0
-    for i in open('/media/zero/41FF48D81730BD9B/all-the-news/texted.txt'):
+    for i in open(text_file):
         text+=line_processing(i)+'\n'
         count += 1
         if count % 1000 == 0: break
